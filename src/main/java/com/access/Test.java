@@ -31,11 +31,15 @@ import org.orekit.utils.Constants;
 import org.orekit.utils.IERSConventions;
 
 import java.io.File;
+/*
+ * 3*2颗卫星网络 与 1个地面站 的可见性分析
+ */
+
 
 public class Test {
     public static void main(String[] args) {
         // 替换为实际的 orekit 数据目录路径
-        File orekitData = new File("D:\\Code\\code_need\\orekit-data");
+        File orekitData = new File("/Users/liuzhengyang/Downloads/orekit-data");
         // 通过 DataContext 获取默认的数据提供管理器
         DataContext.getDefault().getDataProvidersManager().addProvider(new DirectoryCrawler(orekitData));
 
@@ -91,7 +95,7 @@ public class Test {
         final double maxCheckInterval = 60.0;
         final BooleanDetector detector = BooleanDetector.andCombine(ed, BooleanDetector.notCombine(fd))
                 .withMaxCheck(maxCheckInterval)
-                .withHandler(new EventHandler(){
+                .withHandler(new EventHandler() {
                     private AbsoluteDate start;
 
                     @Override

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.bupt</groupId>
-    <artifactId>mySTK_tool</artifactId>
+    <artifactId>mySTK</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
