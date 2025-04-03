@@ -29,6 +29,7 @@ import java.util.List;
 
 /**
  * 卫星–卫星可见性分析模块
+ * 可见：两卫星之间有直接视线且距离不超过一定阈值
  * 输入：两颗卫星的轨道参数（封装在 KeplerianElements 对象中）、开始时间、结束时间；
  * 输出：两颗卫星在该时间段内的可见性窗口列表，每个窗口包含开始时间、结束时间和持续时长。
  */
@@ -109,15 +110,22 @@ public class InterSatelliteVisibilityAnalyzer {
         return windows;
     }
 
-    // 自定义检测器：视线无遮挡检测器
+    // 遮挡检测器
     private static class LineOfSightDetector extends AbstractDetector<LineOfSightDetector> {
         private final Propagator otherSatProp;
         private final OneAxisEllipsoid earth;
 
-        public LineOfSightDetector(Propagator otherSatProp, OneAxisEllipsoid earth) {
-            super((state) -> DEFAULT_MAXCHECK, 1e-3, 100, new RecordAndContinue());
+        // 新构造器：传入所有参数
+        public LineOfSightDetector(Propagator otherSatProp, OneAxisEllipsoid earth,
+                                   AdaptableInterval maxCheck, double threshold, int maxIter, EventHandler handler) {
+            super(maxCheck, threshold, maxIter, handler);
             this.otherSatProp = otherSatProp;
             this.earth = earth;
+        }
+
+        // 原有构造器调用默认参数
+        public LineOfSightDetector(Propagator otherSatProp, OneAxisEllipsoid earth) {
+            this(otherSatProp, earth, state -> AbstractDetector.DEFAULT_MAXCHECK, 1e-3, 100, new RecordAndContinue());
         }
 
         @Override
@@ -133,23 +141,23 @@ public class InterSatelliteVisibilityAnalyzer {
         @Override
         protected LineOfSightDetector create(AdaptableInterval newMaxCheck, double newThreshold,
                                              int newMaxIter, EventHandler newHandler) {
-            return new LineOfSightDetector(otherSatProp, earth)
-                    .withMaxCheck(newMaxCheck)
-                    .withThreshold(newThreshold)
-                    .withMaxIter(newMaxIter)
-                    .withHandler(newHandler);
+            return new LineOfSightDetector(otherSatProp, earth, newMaxCheck, newThreshold, newMaxIter, newHandler);
         }
     }
-
-    // 自定义检测器：最大距离检测器
+    // 最大距离探测器
     private static class MaxRangeDetector extends AbstractDetector<MaxRangeDetector> {
         private final Propagator otherSatProp;
         private final double maxDistance;
 
-        public MaxRangeDetector(Propagator otherSatProp, double maxDistance) {
-            super((state) -> DEFAULT_MAXCHECK, 1e-3, 100, new RecordAndContinue());
+        public MaxRangeDetector(Propagator otherSatProp, double maxDistance,
+                                AdaptableInterval maxCheck, double threshold, int maxIter, EventHandler handler) {
+            super(maxCheck, threshold, maxIter, handler);
             this.otherSatProp = otherSatProp;
             this.maxDistance = maxDistance;
+        }
+
+        public MaxRangeDetector(Propagator otherSatProp, double maxDistance) {
+            this(otherSatProp, maxDistance, state -> AbstractDetector.DEFAULT_MAXCHECK, 1e-3, 100, new RecordAndContinue());
         }
 
         @Override
@@ -164,12 +172,10 @@ public class InterSatelliteVisibilityAnalyzer {
         @Override
         protected MaxRangeDetector create(AdaptableInterval newMaxCheck, double newThreshold,
                                           int newMaxIter, EventHandler newHandler) {
-            return new MaxRangeDetector(otherSatProp, maxDistance)
-                    .withMaxCheck(newMaxCheck)
-                    .withThreshold(newThreshold)
-                    .withMaxIter(newMaxIter)
-                    .withHandler(newHandler);
+            return new MaxRangeDetector(otherSatProp, maxDistance, newMaxCheck, newThreshold, newMaxIter, newHandler);
         }
     }
+
+
 
 }
