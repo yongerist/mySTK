@@ -61,8 +61,8 @@ public class InterSatelliteVisibilityAnalyzer {
      * @throws OrekitException
      */
     public List<VisibilityWindow> computeVisibility(KeplerianElements orbitElem1,
-                                                      KeplerianElements orbitElem2,
-                                                      AbsoluteDate start, AbsoluteDate end)
+                                                    KeplerianElements orbitElem2,
+                                                    AbsoluteDate start, AbsoluteDate end)
             throws OrekitException {
         // 1. 构造两颗卫星的轨道和传播器
         KeplerianOrbit orbit1 = orbitElem1.toOrbit(inertialFrame, Constants.WGS84_EARTH_MU);
@@ -82,19 +82,28 @@ public class InterSatelliteVisibilityAnalyzer {
         EventDetector combinedDetector = BooleanDetector.andCombine(losDetector, rangeDetector)
                 .withHandler(new RecordAndContinue());
 
-        // 4. 将组合检测器添加到卫星1的传播器中，并进行传播
+        // 4. 将组合检测器添加到卫星1的传播器中
         propagator1.addEventDetector(combinedDetector);
+
+        // 检查初始状态是否已经满足可见条件
+        SpacecraftState initState = propagator1.getInitialState();
+        // 如果初始状态满足条件，则记录窗口起点
+        AbsoluteDate windowStart = (combinedDetector.g(initState) > 0) ? initState.getDate() : null;
+
+        // 5. 传播卫星状态（事件会被记录）
         propagator1.propagate(start, end);
 
-        // 5. 处理事件记录，生成可见性窗口列表
+        // 6. 从事件处理器中获取事件记录，生成可见性窗口列表
         RecordAndContinue handler = (RecordAndContinue) combinedDetector.getHandler();
         List<RecordAndContinue.Event> events = handler.getEvents();
         List<VisibilityWindow> windows = new ArrayList<>();
-        AbsoluteDate windowStart = null;
         for (RecordAndContinue.Event ev : events) {
             if (ev.isIncreasing()) {
-                windowStart = ev.getState().getDate();
-            } else {
+                // 如果窗口起点尚未设置，则用此事件作为窗口开始
+                if (windowStart == null) {
+                    windowStart = ev.getState().getDate();
+                }
+            } else { // 下降事件：条件由满足变为不满足
                 if (windowStart != null) {
                     AbsoluteDate windowEnd = ev.getState().getDate();
                     double duration = windowEnd.durationFrom(windowStart);
@@ -103,12 +112,14 @@ public class InterSatelliteVisibilityAnalyzer {
                 }
             }
         }
+        // 如果最后仍处于可见状态，则记录最后一个窗口（结束时间为 null）
         if (windowStart != null) {
             double duration = end.durationFrom(windowStart);
             windows.add(new VisibilityWindow(windowStart, null, duration));
         }
         return windows;
     }
+
 
     // 遮挡检测器
     private static class LineOfSightDetector extends AbstractDetector<LineOfSightDetector> {
