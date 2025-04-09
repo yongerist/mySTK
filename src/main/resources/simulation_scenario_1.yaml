@@ -1,0 +1,31 @@
+simulation:
+  # 仿真起始时间采用 ISO8601 格式（UTC）
+  startTime: "2025-01-01T04:00:00Z"
+  # 仿真持续时长（秒），例如 3600 秒代表 1 小时
+  durationSeconds: 3600
+
+  # 卫星列表：每颗卫星的参数
+  satellites:
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 0.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 30.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+
+  # 地面站列表：定义各个地面站的经纬度和海拔
+  groundStations:
+    - lat: 0.0
+      lon: 0.0
+      alt: 0.0
+    - lat: 0.0
+      lon: 30.0
+      alt: 0.0

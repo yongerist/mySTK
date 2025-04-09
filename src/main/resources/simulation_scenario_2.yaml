@@ -1,0 +1,316 @@
+simulation:
+  # 仿真起始时间采用 ISO8601 格式（UTC 时间）
+  startTime: "2025-01-01T04:00:00Z"
+  # 仿真持续秒数，这里设为 3600 秒（即 1 小时）
+  durationSeconds: 3600
+
+  # 卫星列表：12 个轨道，每个轨道有 3 颗卫星
+  satellites:
+    # 轨道 0 (raan = 0°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 0.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 0.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 0.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+    # 轨道 1 (raan = 30°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 30.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 30.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 30.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+    # 轨道 2 (raan = 60°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 60.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 60.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 60.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+    # 轨道 3 (raan = 90°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 90.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 90.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 90.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+    # 轨道 4 (raan = 120°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 120.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 120.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 120.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+    # 轨道 5 (raan = 150°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 150.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 150.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 150.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+    # 轨道 6 (raan = 180°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 180.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 180.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 180.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+    # 轨道 7 (raan = 210°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 210.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 210.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 210.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+    # 轨道 8 (raan = 240°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 240.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 240.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 240.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+    # 轨道 9 (raan = 270°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 270.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 270.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 270.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+    # 轨道 10 (raan = 300°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 300.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 300.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 300.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+    # 轨道 11 (raan = 330°)
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 330.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 330.0
+      argPerigee: 0.0
+      trueAnomaly: 120.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 330.0
+      argPerigee: 0.0
+      trueAnomaly: 240.0
+      epoch: "2025-01-01T04:00:00Z"
+
+  # 地面站列表：共 10 个地面站，均匀分布（这里只给出示例，可根据实际需求调整坐标）
+  groundStations:
+    - lat: 0.0
+      lon: 0.0
+      alt: 0.0
+    - lat: 0.0
+      lon: 36.0
+      alt: 0.0
+    - lat: 0.0
+      lon: 72.0
+      alt: 0.0
+    - lat: 0.0
+      lon: 108.0
+      alt: 0.0
+    - lat: 0.0
+      lon: 144.0
+      alt: 0.0
+    - lat: 0.0
+      lon: 180.0
+      alt: 0.0
+    - lat: 0.0
+      lon: 216.0
+      alt: 0.0
+    - lat: 0.0
+      lon: 252.0
+      alt: 0.0
+    - lat: 0.0
+      lon: 288.0
+      alt: 0.0
+    - lat: 0.0
+      lon: 324.0
+      alt: 0.0
