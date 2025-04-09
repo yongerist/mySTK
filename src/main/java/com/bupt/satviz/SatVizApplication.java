@@ -2,7 +2,6 @@ package com.bupt.satviz;
 
 import com.bupt.satviz.calculation.SatelliteStateCalculator;
 import com.bupt.satviz.concurrent.ParallelVisibilityExecutor;
-import com.bupt.satviz.config.DataPreparation;
 import com.bupt.satviz.config.OrekitConfig;
 import com.bupt.satviz.config.SimulationConfig;
 import com.bupt.satviz.model.SatResult;
