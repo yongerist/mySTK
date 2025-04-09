@@ -97,12 +97,6 @@ mvn exec:java -Dexec.mainClass="com.bupt.satviz.SatVizApplication"
 mvn test
 ```
 
-或
-
-```bash
-gradle test
-```
-
 确保所有测试用例顺利通过，以验证各模块功能的正确性。
 
 ### 6. 日志配置
