@@ -9,8 +9,9 @@ import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.errors.OrekitException;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
+import org.orekit.propagation.BoundedPropagator; // 使用 BoundedPropagator
+import org.orekit.propagation.Propagator;       // 使用 Propagator 接口
 import org.orekit.orbits.KeplerianOrbit;
-import org.orekit.propagation.Propagator;
 import org.orekit.propagation.SpacecraftState;
 import org.orekit.propagation.analytical.KeplerianPropagator;
 import org.orekit.propagation.events.AbstractDetector;
@@ -35,7 +36,7 @@ import java.util.List;
 public class InterSatelliteVisibilityAnalyzer {
 
     // 最大允许距离（单位：米）
-    private double maxDistance;
+    private final double maxDistance;
 
     // 公共参考系和地球模型
     private static final Frame inertialFrame = FramesFactory.getEME2000();
@@ -52,50 +53,58 @@ public class InterSatelliteVisibilityAnalyzer {
     /**
      * 计算两颗卫星在指定时间段内的可见性窗口
      *
-     * @param orbitElem1 卫星1轨道参数（KeplerianElements）
-     * @param orbitElem2 卫星2轨道参数（KeplerianElements）
+     * @param primarySatEphemeris 主卫星（事件驱动器）的星历。
+     * @param otherSatEphemeris   另一个卫星的星历。
      * @param start      开始时间
      * @param end        结束时间
      * @return 可见性窗口列表
      * @throws OrekitException
      */
-    public List<VisibilityWindow> computeVisibility(KeplerianElements orbitElem1,
-                                                    KeplerianElements orbitElem2,
-                                                    AbsoluteDate start, AbsoluteDate end)
-            throws OrekitException {
-        // 1. 构造两颗卫星的轨道和传播器
-        KeplerianOrbit orbit1 = orbitElem1.toOrbit(inertialFrame, Constants.WGS84_EARTH_MU);
-        KeplerianOrbit orbit2 = orbitElem2.toOrbit(inertialFrame, Constants.WGS84_EARTH_MU);
-        Propagator propagator1 = new KeplerianPropagator(orbit1);
-        Propagator propagator2 = new KeplerianPropagator(orbit2);
+    public List<VisibilityWindow> computeVisibility(BoundedPropagator primarySatEphemeris,
+                                                    BoundedPropagator otherSatEphemeris,
+                                                    AbsoluteDate start,
+                                                    AbsoluteDate end
+    )throws OrekitException {
+        // --- 直接使用主卫星的星历作为事件驱动器 ---
+        Propagator eventDriver = primarySatEphemeris;
 
-        // 2. 定义自定义事件检测器：
+        // --- 定义自定义事件探测器 (传入 另一个 卫星的星历) ---
         // 2.1 视线无遮挡检测器
-        LineOfSightDetector losDetector = new LineOfSightDetector(propagator2, earth)
+        LineOfSightDetector losDetector = new LineOfSightDetector(otherSatEphemeris, earth)
                 .withMaxCheck(10.0).withThreshold(1e-6);
         // 2.2 最大距离检测器
-        MaxRangeDetector rangeDetector = new MaxRangeDetector(propagator2, maxDistance)
+        MaxRangeDetector rangeDetector = new MaxRangeDetector(otherSatEphemeris, maxDistance)
                 .withMaxCheck(10.0).withThreshold(1e-6);
 
         // 3. 组合两个检测器（逻辑与）
         EventDetector combinedDetector = BooleanDetector.andCombine(losDetector, rangeDetector)
                 .withHandler(new RecordAndContinue());
 
-        // 4. 将组合检测器添加到卫星1的传播器中
-        propagator1.addEventDetector(combinedDetector);
+        // --- 准备事件驱动器 (主卫星星历) ---
+        // 清除可能存在的旧探测器
+        eventDriver.clearEventsDetectors();
+        // 添加组合探测器
+        eventDriver.addEventDetector(combinedDetector);
+
 
         // 检查初始状态是否已经满足可见条件
-        SpacecraftState initState = propagator1.getInitialState();
-        // 如果初始状态满足条件，则记录窗口起点
-        AbsoluteDate windowStart = (combinedDetector.g(initState) > 0) ? initState.getDate() : null;
+        SpacecraftState initialState = eventDriver.propagate(start);
+        double initialG = combinedDetector.g(initialState);
+        // g >= 0 表示初始时刻可见
+        AbsoluteDate windowStart = (initialG >= 0) ? initialState.getDate() : null;
 
-        // 5. 传播卫星状态（事件会被记录）
-        propagator1.propagate(start, end);
+
+        // --- 使用主卫星星历驱动事件检测循环 ---
+        // 这个 propagate 调用将使用主星历的插值状态驱动，
+        // 而探测器内部的 g 函数会使用次星历进行查找。
+        eventDriver.propagate(start, end);
+
 
         // 6. 从事件处理器中获取事件记录，生成可见性窗口列表
         RecordAndContinue handler = (RecordAndContinue) combinedDetector.getHandler();
         List<RecordAndContinue.Event> events = handler.getEvents();
         List<VisibilityWindow> windows = new ArrayList<>();
+
         for (RecordAndContinue.Event ev : events) {
             if (ev.isIncreasing()) {
                 // 如果窗口起点尚未设置，则用此事件作为窗口开始
@@ -105,16 +114,22 @@ public class InterSatelliteVisibilityAnalyzer {
             } else { // 下降事件：条件由满足变为不满足
                 if (windowStart != null) {
                     AbsoluteDate windowEnd = ev.getState().getDate();
-                    double duration = windowEnd.durationFrom(windowStart);
-                    windows.add(new VisibilityWindow(windowStart, windowEnd, duration));
+                    if (windowEnd.durationFrom(windowStart) > 1e-9) {
+                        double duration = windowEnd.durationFrom(windowStart);
+                        windows.add(new VisibilityWindow(windowStart, windowEnd, duration));
+                    }
                     windowStart = null;
                 }
             }
         }
         // 如果最后仍处于可见状态，则记录最后一个窗口（结束时间为 null）
         if (windowStart != null) {
-            double duration = end.durationFrom(windowStart);
-            windows.add(new VisibilityWindow(windowStart, null, duration));
+            if (!windowStart.isAfter(end)) {
+                double duration = end.durationFrom(windowStart);
+                if (duration > 1e-9) {
+                    windows.add(new VisibilityWindow(windowStart, null, duration));
+                }
+            }
         }
         return windows;
     }
@@ -122,71 +137,81 @@ public class InterSatelliteVisibilityAnalyzer {
 
     // 遮挡检测器
     private static class LineOfSightDetector extends AbstractDetector<LineOfSightDetector> {
-        private final Propagator otherSatProp;
+        private final BoundedPropagator otherSatEphemeris; // 存储次卫星星历
         private final OneAxisEllipsoid earth;
 
         // 新构造器：传入所有参数
-        public LineOfSightDetector(Propagator otherSatProp, OneAxisEllipsoid earth,
+        public LineOfSightDetector(BoundedPropagator otherSatEphemeris, OneAxisEllipsoid earth,
                                    AdaptableInterval maxCheck, double threshold, int maxIter, EventHandler handler) {
             super(maxCheck, threshold, maxIter, handler);
-            this.otherSatProp = otherSatProp;
+            this.otherSatEphemeris = otherSatEphemeris;
             this.earth = earth;
         }
 
         // 原有构造器调用默认参数
-        public LineOfSightDetector(Propagator otherSatProp, OneAxisEllipsoid earth) {
-            this(otherSatProp, earth, state -> AbstractDetector.DEFAULT_MAXCHECK, 1e-3, 100, new RecordAndContinue());
+        public LineOfSightDetector(BoundedPropagator otherSatEphemeris, OneAxisEllipsoid earth) {
+            this(otherSatEphemeris, earth, state -> AbstractDetector.DEFAULT_MAXCHECK, 1e-6, 100, new RecordAndContinue());
         }
 
         @Override
-        public double g(SpacecraftState state) {
+        public double g(SpacecraftState state) throws OrekitException {
             AbsoluteDate t = state.getDate();
+            // 获取主卫星在地固系的位置
             Vector3D pos1 = state.getPVCoordinates(earthFrame).getPosition();
-            Vector3D pos2 = otherSatProp.propagate(t).getPVCoordinates(earthFrame).getPosition();
+            // --- 使用次卫星星历快速获取其在 t 时刻的状态和位置 ---
+            SpacecraftState otherState = otherSatEphemeris.propagate(t); // 核心
+            Vector3D pos2 = otherState.getPVCoordinates(earthFrame).getPosition();
+
             if (pos1.distance(pos2) < 1e-6) {
-                // 两卫星几乎重合时，直接返回1.0避免归一化错误
+                // 两卫星几乎重合时，直接返回1.0避免数值错误
                 return 1.0;
             }
-            Line line = new Line(pos1, pos2, 1e-3);
+            // 创建连接两点的直线
+            Line line = new Line(pos1, pos2, 1e-6); // 设置直线构造容差
             // 若地球与连线无交点，则视线无遮挡
+            // getIntersectionPoint 返回 null 表示无交点（无遮挡）
+            // 1.0 表示无遮挡 ，-1.0 表示有遮挡
             return earth.getIntersectionPoint(line, pos1, earthFrame, t) == null ? 1.0 : -1.0;
         }
 
         @Override
         protected LineOfSightDetector create(AdaptableInterval newMaxCheck, double newThreshold,
                                              int newMaxIter, EventHandler newHandler) {
-            return new LineOfSightDetector(otherSatProp, earth, newMaxCheck, newThreshold, newMaxIter, newHandler);
+            return new LineOfSightDetector(otherSatEphemeris, earth, newMaxCheck, newThreshold, newMaxIter, newHandler);
         }
     }
     // 最大距离探测器
     private static class MaxRangeDetector extends AbstractDetector<MaxRangeDetector> {
-        private final Propagator otherSatProp;
+        private final BoundedPropagator otherSatEphemeris;
         private final double maxDistance;
 
-        public MaxRangeDetector(Propagator otherSatProp, double maxDistance,
+        public MaxRangeDetector(BoundedPropagator otherSatEphemeris, double maxDistance,
                                 AdaptableInterval maxCheck, double threshold, int maxIter, EventHandler handler) {
             super(maxCheck, threshold, maxIter, handler);
-            this.otherSatProp = otherSatProp;
+            this.otherSatEphemeris = otherSatEphemeris;
             this.maxDistance = maxDistance;
         }
 
-        public MaxRangeDetector(Propagator otherSatProp, double maxDistance) {
-            this(otherSatProp, maxDistance, state -> AbstractDetector.DEFAULT_MAXCHECK, 1e-3, 100, new RecordAndContinue());
+        public MaxRangeDetector(BoundedPropagator otherSatEphemeris, double maxDistance) {
+            this(otherSatEphemeris, maxDistance, state -> AbstractDetector.DEFAULT_MAXCHECK, 1e-6, 100, new RecordAndContinue());
         }
 
         @Override
-        public double g(SpacecraftState state) {
+        public double g(SpacecraftState state) throws OrekitException{
             AbsoluteDate t = state.getDate();
             Vector3D pos1 = state.getPVCoordinates(inertialFrame).getPosition();
-            Vector3D pos2 = otherSatProp.propagate(t).getPVCoordinates(inertialFrame).getPosition();
+            // --- 使用次卫星星历快速获取其在 t 时刻的状态和位置 ---
+            SpacecraftState otherState = otherSatEphemeris.propagate(t);
+            Vector3D pos2 = otherState.getPVCoordinates(inertialFrame).getPosition();
             double distance = pos1.distance(pos2);
+            // g 函数 > 0 表示 distance < maxDistance
             return maxDistance - distance;
         }
 
         @Override
         protected MaxRangeDetector create(AdaptableInterval newMaxCheck, double newThreshold,
                                           int newMaxIter, EventHandler newHandler) {
-            return new MaxRangeDetector(otherSatProp, maxDistance, newMaxCheck, newThreshold, newMaxIter, newHandler);
+            return new MaxRangeDetector(otherSatEphemeris, maxDistance, newMaxCheck, newThreshold, newMaxIter, newHandler);
         }
     }
 
