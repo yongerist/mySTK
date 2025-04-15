@@ -8,6 +8,7 @@ import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.errors.OrekitException;
 import org.orekit.frames.Frame;
+import org.orekit.orbits.Orbit; // 导入 Orbit
 import org.orekit.frames.FramesFactory;
 import org.orekit.propagation.BoundedPropagator; // 使用 BoundedPropagator
 import org.orekit.propagation.Propagator;       // 使用 Propagator 接口
@@ -65,42 +66,47 @@ public class InterSatelliteVisibilityAnalyzer {
                                                     AbsoluteDate start,
                                                     AbsoluteDate end
     )throws OrekitException {
-        // --- 直接使用主卫星的星历作为事件驱动器 ---
-        Propagator eventDriver = primarySatEphemeris;
+        // 1. 从主卫星星历获取精确的初始状态
+        SpacecraftState initialState = primarySatEphemeris.propagate(start);
+        Orbit initialOrbit = initialState.getOrbit();
 
-        // --- 定义自定义事件探测器 (传入 另一个 卫星的星历) ---
-        // 2.1 视线无遮挡检测器
+        // 2. 创建一个临时的、活动的传播器来驱动事件循环
+        //    使用与生成星历时相同的传播模型
+        Propagator eventDriver = new KeplerianPropagator(initialOrbit);
+
+
+
+        // 3. 定义自定义事件探测器 (传入 另一个 卫星的星历)
+        // 视线无遮挡检测器
         LineOfSightDetector losDetector = new LineOfSightDetector(otherSatEphemeris, earth)
                 .withMaxCheck(10.0).withThreshold(1e-6);
-        // 2.2 最大距离检测器
+        // 最大距离检测器
         MaxRangeDetector rangeDetector = new MaxRangeDetector(otherSatEphemeris, maxDistance)
                 .withMaxCheck(10.0).withThreshold(1e-6);
 
-        // 3. 组合两个检测器（逻辑与）
+        // 4. 组合两个检测器（逻辑与）
         EventDetector combinedDetector = BooleanDetector.andCombine(losDetector, rangeDetector)
                 .withHandler(new RecordAndContinue());
 
-        // --- 准备事件驱动器 (主卫星星历) ---
+        // 5. 将探测器添加到 临时的 事件驱动器
         // 清除可能存在的旧探测器
         eventDriver.clearEventsDetectors();
         // 添加组合探测器
         eventDriver.addEventDetector(combinedDetector);
 
 
-        // 检查初始状态是否已经满足可见条件
-        SpacecraftState initialState = eventDriver.propagate(start);
+        // 6. 检查初始状态是否已经满足可见条件
         double initialG = combinedDetector.g(initialState);
         // g >= 0 表示初始时刻可见
         AbsoluteDate windowStart = (initialG >= 0) ? initialState.getDate() : null;
 
 
-        // --- 使用主卫星星历驱动事件检测循环 ---
-        // 这个 propagate 调用将使用主星历的插值状态驱动，
-        // 而探测器内部的 g 函数会使用次星历进行查找。
+        // 7. 使用 临时的 传播器驱动事件检测循环
+        // 这个 propagate 会执行轨道计算（只对主卫星）
         eventDriver.propagate(start, end);
 
 
-        // 6. 从事件处理器中获取事件记录，生成可见性窗口列表
+        // 8. 从事件处理器中获取事件记录，生成可见性窗口列表
         RecordAndContinue handler = (RecordAndContinue) combinedDetector.getHandler();
         List<RecordAndContinue.Event> events = handler.getEvents();
         List<VisibilityWindow> windows = new ArrayList<>();

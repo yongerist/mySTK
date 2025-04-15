@@ -8,6 +8,7 @@ import org.orekit.attitudes.AttitudeProvider;
 import org.orekit.propagation.BoundedPropagator; // 使用 BoundedPropagator
 import org.orekit.propagation.Propagator;       // 使用 Propagator 接口
 import org.orekit.attitudes.NadirPointing;
+import org.orekit.orbits.Orbit;
 import org.orekit.bodies.GeodeticPoint;
 import org.orekit.bodies.OneAxisEllipsoid;
 import org.orekit.errors.OrekitException;
@@ -73,17 +74,14 @@ public class GroundStationVisibilityAnalyzer {
                                                     AbsoluteDate start, AbsoluteDate end,
                                                     double stationLatDeg, double stationLonDeg, double stationAlt)
             throws OrekitException {
-        // --- 直接使用传入的星历作为事件驱动器 ---
-        Propagator eventDriver = primarySatEphemeris;
-
-        // --- 为事件检测设置姿态 (如果需要视场约束) ---
-        AttitudeProvider attitudeToSet = null;
+        // 1. 创建临时传播器来驱动事件
+        SpacecraftState initialState = primarySatEphemeris.propagate(start);
+        Orbit initialOrbit = initialState.getOrbit();
+        Propagator eventDriver = new KeplerianPropagator(initialOrbit);
+        // 如果需要视场约束，设置姿态到这个临时传播器上
         if (useCoverageConstraint) {
-            // 设置卫星姿态为对地定向即卫星始终以机体坐标系的+Z轴指向地球中心
-            attitudeToSet = new NadirPointing(inertialFrame, earth);
-            eventDriver.setAttitudeProvider(attitudeToSet);
+            eventDriver.setAttitudeProvider(new NadirPointing(inertialFrame, earth));
         }
-        // --- 姿态设置结束 ---
 
 
         // 2. 构造地面站 TopocentricFrame，以地面站为原点，本地水平面为参考，用于仰角和视线计算
@@ -134,22 +132,16 @@ public class GroundStationVisibilityAnalyzer {
                     .withHandler(new RecordAndContinue());
         }
 
-        // 准备事件驱动器 (星历)
-        // 清除任何可能在星历生成阶段遗留的探测器 (非常重要)
+        // --- 将探测器添加到 临时 驱动器 ---
         eventDriver.clearEventsDetectors();
-        // 添加我们关心的可见性探测器
         eventDriver.addEventDetector(visibilityDetector);
 
         // --- 检查初始状态 ---
-        // 使用星历获取开始时刻的精确状态
-        SpacecraftState initialState = eventDriver.propagate(start);
         double initialG = visibilityDetector.g(initialState);
         // g >= 0 表示初始时刻就满足可见性条件
         AbsoluteDate windowStart = (initialG >= 0) ? initialState.getDate() : null;
 
-        // --- 使用星历驱动事件检测循环 ---
-        // 这个 propagate 调用将使用星历内部的插值状态来驱动事件，
-        // 不会执行新的轨道动力学计算。
+        // --- 使用 临时 驱动器进行传播以查找事件 ---
         eventDriver.propagate(start, end);
 
         // --- 处理事件结果 (逻辑不变) ---
