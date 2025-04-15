@@ -30,7 +30,7 @@ public class SatVizApplication {
             System.out.println("Orekit 初始化完成.");
 //            2. 调用数据准备模块，获取模拟参数(硬编码)
 //            DataPreparation.SimulationParameters simParams = DataPreparation.prepareSimulationData();
-//            List<KeplerianElements> orbits = simParams.satelliteOrbits;
+//            List<KeplerianElements> orbitsElements = simParams.satelliteOrbits;
 //            List<GroundStation> groundStations = simParams.groundStations;
 //            AbsoluteDate startDate = simParams.startDate;
 //            AbsoluteDate endDate   = simParams.endDate;
