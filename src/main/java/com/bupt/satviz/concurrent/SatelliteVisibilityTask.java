@@ -20,6 +20,7 @@ public class SatelliteVisibilityTask implements Callable<SatResult> {
     private final List<BoundedPropagator> allEphemerides; // 存储所有星历
     private final AbsoluteDate startDate;
     private final AbsoluteDate endDate;
+    private static final double MAX_INTER_SATELLITE_DISTANCE_METERS = 3_500_000.0; // 4,500 km
 
     public SatelliteVisibilityTask(int satId,
                                    BoundedPropagator primarySatEphemeris,
@@ -63,7 +64,7 @@ public class SatelliteVisibilityTask implements Callable<SatResult> {
 
 
         // 2. 计算该卫星与其它卫星的可见性窗口（只计算编号比当前大的，以避免重复）
-        InterSatelliteVisibilityAnalyzer interSatAnalyzer = new InterSatelliteVisibilityAnalyzer(5_000_000.0);
+        InterSatelliteVisibilityAnalyzer interSatAnalyzer = new InterSatelliteVisibilityAnalyzer(MAX_INTER_SATELLITE_DISTANCE_METERS);
         // 优化循环，避免重复计算 (A->B 和 B->A) 以及自身计算 (A->A)
         for (int otherId = satId + 1; otherId < allEphemerides.size(); otherId++) {
             try {

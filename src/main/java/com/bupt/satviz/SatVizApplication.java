@@ -3,6 +3,7 @@ package com.bupt.satviz;
 //import com.bupt.satviz.calculation.SatelliteStateCalculator;
 import com.bupt.satviz.calculation.SatelliteStateCalculator;
 import com.bupt.satviz.concurrent.ParallelVisibilityExecutor;
+import com.bupt.satviz.config.DataPreparation;
 import com.bupt.satviz.config.OrekitConfig;
 import com.bupt.satviz.config.SimulationConfig;
 import com.bupt.satviz.model.SatResult;
@@ -29,21 +30,21 @@ public class SatVizApplication {
             OrekitConfig.initialize();
             System.out.println("Orekit 初始化完成.");
 //            2. 调用数据准备模块，获取模拟参数(硬编码)
-//            DataPreparation.SimulationParameters simParams = DataPreparation.prepareSimulationData();
-//            List<KeplerianElements> orbitsElements = simParams.satelliteOrbits;
-//            List<GroundStation> groundStations = simParams.groundStations;
-//            AbsoluteDate startDate = simParams.startDate;
-//            AbsoluteDate endDate   = simParams.endDate;
+            DataPreparation.SimulationParameters simParams = DataPreparation.prepareSimulationData();
+            List<KeplerianElements> orbitsElements = simParams.satelliteOrbits;
+            List<GroundStation> groundStations = simParams.groundStations;
+            AbsoluteDate startDate = simParams.startDate;
+            AbsoluteDate endDate   = simParams.endDate;
 
             // 2. 通过 SimulationConfig 加载仿真参数（YAML 文件在 src/main/resources 下）
-            System.out.println("步骤 2: 加载仿真配置 ...");
-            SimulationConfig config = new SimulationConfig("simulation_scenario_2.yaml");
-            List<KeplerianElements> orbitsElements = config.getSatelliteOrbits();
-            List<GroundStation> groundStations = config.getGroundStations();
-            AbsoluteDate startDate = config.getStartDate();
-            AbsoluteDate endDate = config.getEndDate();
-            System.out.println("仿真配置加载完成. 开始时间: " + startDate + ", 结束时间: " + endDate);
-            System.out.println("卫星数量: " + orbitsElements.size() + ", 地面站数量: " + groundStations.size());
+            //System.out.println("步骤 2: 加载仿真配置 ...");
+            //SimulationConfig config = new SimulationConfig("simulation_scenario_2.yaml");
+            //List<KeplerianElements> orbitsElements = config.getSatelliteOrbits();
+            //List<GroundStation> groundStations = config.getGroundStations();
+            //AbsoluteDate startDate = config.getStartDate();
+            //AbsoluteDate endDate = config.getEndDate();
+            //System.out.println("仿真配置加载完成. 开始时间: " + startDate + ", 结束时间: " + endDate);
+            //System.out.println("卫星数量: " + orbitsElements.size() + ", 地面站数量: " + groundStations.size());
 
             // --- 步骤 2.5: 调用新模块生成星历 ---
             System.out.println("步骤 2.5: 生成卫星星历...");
