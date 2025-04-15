@@ -18,6 +18,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class ParallelVisibilityExecutor {
+
+
     /**
      * 并发计算所有卫星的可见性窗口。
      * @param allEphemerides 所有卫星的星历列表
@@ -34,12 +36,10 @@ public class ParallelVisibilityExecutor {
                                                          AbsoluteDate endDate) throws Exception {
         int numSatellites = allEphemerides.size();
         // 1. 创建固定大小的线程池（线程数可设为CPU核心数）
-        int numThreads = Runtime.getRuntime().availableProcessors();
-        System.out.println("  启动并行计算，使用 " + numThreads + " 个线程.");
-
+        int numThreads = 8; // Runtime.getRuntime().availableProcessors();
         // 2. 创建固定大小线程池
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-
+        System.out.println("  启动并行计算，使用 " + numThreads + " 个线程.");
         // 3. 为每颗卫星创建可见性计算任务并提交到线程池
         List<Future<SatResult>> futures = new ArrayList<>();
         System.out.println("  为 " + numSatellites + " 颗卫星创建并提交可见性计算任务...");
