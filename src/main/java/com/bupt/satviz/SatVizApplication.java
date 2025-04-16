@@ -1,20 +1,15 @@
 package com.bupt.satviz;
 
-//import com.bupt.satviz.calculation.SatelliteStateCalculator;
-import com.bupt.satviz.calculation.SatelliteStateCalculator;
 import com.bupt.satviz.concurrent.ParallelVisibilityExecutor;
-import com.bupt.satviz.config.DataPreparation;
+import com.bupt.satviz.model.KeplerianElements;
 import com.bupt.satviz.config.OrekitConfig;
 import com.bupt.satviz.config.SimulationConfig;
 import com.bupt.satviz.model.SatResult;
-//import com.bupt.satviz.model.SatelliteState;
-import com.bupt.satviz.model.SatelliteState;
 import com.bupt.satviz.output.ConsoleResultPrinter;
 import com.bupt.satviz.model.GroundStation;
 import org.orekit.time.AbsoluteDate;
-import com.bupt.satviz.model.KeplerianElements;
-import com.bupt.satviz.preprocessing.EphemerisGeneratorService; // 导入新的服务类
-import org.orekit.propagation.BoundedPropagator; // 导入 BoundedPropagator
+import com.bupt.satviz.preprocessing.EphemerisGeneratorService;
+import org.orekit.propagation.BoundedPropagator;
 
 import java.util.List;
 
@@ -23,6 +18,9 @@ public class SatVizApplication {
         // 记录仿真开始时间戳
         long startTimeMillis = System.currentTimeMillis();
         System.out.println("开始仿真...");
+        List<KeplerianElements> orbitsElements = null;
+        AbsoluteDate startDate = null;
+
 
         try {
             // 1. 初始化 Orekit（加载 orekit-data 数据）
@@ -30,21 +28,27 @@ public class SatVizApplication {
             OrekitConfig.initialize();
             System.out.println("Orekit 初始化完成.");
 //            2. 调用数据准备模块，获取模拟参数(硬编码)
-            DataPreparation.SimulationParameters simParams = DataPreparation.prepareSimulationData();
-            List<KeplerianElements> orbitsElements = simParams.satelliteOrbits;
-            List<GroundStation> groundStations = simParams.groundStations;
-            AbsoluteDate startDate = simParams.startDate;
-            AbsoluteDate endDate   = simParams.endDate;
+//            DataPreparation.SimulationParameters simParams = DataPreparation.prepareSimulationData();
+//            orbitsElements = simParams.satelliteOrbits;
+//            List<GroundStation> groundStations = simParams.groundStations;
+//            startDate = simParams.startDate;
+//            AbsoluteDate endDate   = simParams.endDate;
 
             // 2. 通过 SimulationConfig 加载仿真参数（YAML 文件在 src/main/resources 下）
-            //System.out.println("步骤 2: 加载仿真配置 ...");
-            //SimulationConfig config = new SimulationConfig("simulation_scenario_2.yaml");
-            //List<KeplerianElements> orbitsElements = config.getSatelliteOrbits();
-            //List<GroundStation> groundStations = config.getGroundStations();
-            //AbsoluteDate startDate = config.getStartDate();
-            //AbsoluteDate endDate = config.getEndDate();
-            //System.out.println("仿真配置加载完成. 开始时间: " + startDate + ", 结束时间: " + endDate);
-            //System.out.println("卫星数量: " + orbitsElements.size() + ", 地面站数量: " + groundStations.size());
+            System.out.println("步骤 2: 加载仿真配置 ...");
+            SimulationConfig config = new SimulationConfig("simulation_scenario_1.yaml");
+            orbitsElements = config.getSatelliteOrbits();
+            List<GroundStation> groundStations = config.getGroundStations();
+            startDate = config.getStartDate();
+            AbsoluteDate endDate = config.getEndDate();
+            if (orbitsElements == null || groundStations == null || startDate == null || endDate == null) {
+                throw new RuntimeException("仿真参数加载失败！");
+            }
+            System.out.println("仿真配置加载完成. 开始时间: " + startDate + ", 结束时间: " + endDate);
+            System.out.println("卫星数量: " + orbitsElements.size() + ", 地面站数量: " + groundStations.size());
+
+
+
 
             // --- 步骤 2.5: 调用新模块生成星历 ---
             System.out.println("步骤 2.5: 生成卫星星历...");
@@ -54,7 +58,7 @@ public class SatVizApplication {
             // --- 星历生成结束 ---
 
 
-            // 3. 调用并行计算模块，计算所有卫星的可见性结果(传入星历列表)
+            // 3. 调用并行计算模块，计算所有卫星的可见性结果
             System.out.println("步骤 3: 并行计算可见性...");
             List<SatResult> allResults = ParallelVisibilityExecutor.computeAllVisibilities(
                     allEphemerides, groundStations, startDate, endDate);
@@ -70,7 +74,7 @@ public class SatVizApplication {
 
             // 5. 打印可见性结果
             System.out.println("步骤 5: 打印可见性结果...");
-            ConsoleResultPrinter.printResults(allResults);
+            ConsoleResultPrinter.printResults(allResults, orbitsElements, startDate);
 
         } catch (Exception e) { // 捕获所有可能的异常，包括 OrekitException 和并发异常
             System.err.println("仿真过程中发生严重错误:");

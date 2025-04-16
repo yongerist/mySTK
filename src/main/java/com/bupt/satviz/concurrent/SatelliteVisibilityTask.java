@@ -20,7 +20,7 @@ public class SatelliteVisibilityTask implements Callable<SatResult> {
     private final List<BoundedPropagator> allEphemerides; // 存储所有星历
     private final AbsoluteDate startDate;
     private final AbsoluteDate endDate;
-    private static final double MAX_INTER_SATELLITE_DISTANCE_METERS = 3_500_000.0; // 4,500 km
+    private static final double MAX_INTER_SATELLITE_DISTANCE_METERS = 4_500_000.0; // 4,500 km
 
     public SatelliteVisibilityTask(int satId,
                                    BoundedPropagator primarySatEphemeris,

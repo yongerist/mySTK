@@ -16,7 +16,7 @@ public class DataPreparation {
     public static SimulationParameters prepareSimulationData() {
         // 1. 初始化仿真起止时间 (2小时)
         AbsoluteDate startDate = new AbsoluteDate(2025, 1, 1, 4, 0, 0.0, TimeScalesFactory.getUTC());
-        AbsoluteDate endDate   = startDate.shiftedBy(7200.0);  // 仿真持续2小时
+        AbsoluteDate endDate   = startDate.shiftedBy(3600.0);  // 仿真持续2小时
 
         // 2. 星座参数
         int numOrbits = 10;       // 10条轨道
