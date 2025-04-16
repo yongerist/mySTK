@@ -1,10 +1,12 @@
 package com.bupt.satviz;
 
+import com.bupt.satviz.calculation.SatelliteStateCalculator;
 import com.bupt.satviz.concurrent.ParallelVisibilityExecutor;
 import com.bupt.satviz.model.KeplerianElements;
 import com.bupt.satviz.config.OrekitConfig;
 import com.bupt.satviz.config.SimulationConfig;
 import com.bupt.satviz.model.SatResult;
+import com.bupt.satviz.model.SatelliteState;
 import com.bupt.satviz.output.ConsoleResultPrinter;
 import com.bupt.satviz.model.GroundStation;
 import org.orekit.time.AbsoluteDate;
@@ -20,8 +22,6 @@ public class SatVizApplication {
         System.out.println("开始仿真...");
         List<KeplerianElements> orbitsElements = null;
         AbsoluteDate startDate = null;
-
-
         try {
             // 1. 初始化 Orekit（加载 orekit-data 数据）
             System.out.println("步骤 1: 初始化 Orekit...");

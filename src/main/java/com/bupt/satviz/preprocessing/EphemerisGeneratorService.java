@@ -1,6 +1,7 @@
 package com.bupt.satviz.preprocessing; // 新建包
 
 import com.bupt.satviz.model.KeplerianElements;
+import org.hipparchus.geometry.euclidean.threed.Vector3D;
 import org.orekit.errors.OrekitException; // 明确导入 OrekitException
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
@@ -11,6 +12,8 @@ import org.orekit.propagation.EphemerisGenerator;
 import org.orekit.propagation.analytical.KeplerianPropagator;
 import org.orekit.time.AbsoluteDate;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
+import org.orekit.utils.PVCoordinates;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +36,8 @@ public class EphemerisGeneratorService {
      * @throws org.orekit.errors.OrekitException 如果轨道传播失败。
      */
     public static List<BoundedPropagator> generateEphemerides(List<KeplerianElements> orbitsElements,
-                                                            AbsoluteDate startDate,
-                                                            AbsoluteDate endDate)
+                                                              AbsoluteDate startDate,
+                                                              AbsoluteDate endDate)
             throws OrekitException { // 明确抛出 OrekitException
 
         System.out.println("  开始生成星历...");

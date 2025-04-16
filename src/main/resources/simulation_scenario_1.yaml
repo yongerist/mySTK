@@ -13,21 +13,34 @@ simulation:
       argPerigee: 0.0
       trueAnomaly: 0.0
       epoch: "2025-01-01T04:00:00Z"
-#    - semiMajorAxis: 6878140.0
-#      eccentricity: 0.0
-#      inclination: 90.0
-#      raan: 0.0
-#      argPerigee: 0.0
-#      trueAnomaly: 30.0
-#      epoch: "2025-01-01T04:00:00Z"
+
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 45.0
+      raan: 36.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+
 
     - semiMajorAxis: 6878140.0
       eccentricity: 0.0
       inclination: 45.0
       raan: 0.0
       argPerigee: 0.0
-      trueAnomaly: 5.0
+      trueAnomaly: 30.0
       epoch: "2025-01-01T04:00:00Z"
+
+
+
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 70.0
+      argPerigee: 0.0
+      trueAnomaly: 0.0
+      epoch: "2025-01-01T04:00:00Z"
+
 
 
   # 地面站列表：定义各个地面站的经纬度和海拔
