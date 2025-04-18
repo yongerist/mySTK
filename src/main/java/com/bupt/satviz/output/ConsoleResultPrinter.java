@@ -46,8 +46,8 @@ public class ConsoleResultPrinter {
             boolean hasVisibility = !res.getGroundStationResults().isEmpty() || !res.getInterSatelliteResults().isEmpty();
 
             // --- 打印卫星初始信息 ---
-            System.out.println("\n==== 卫星 #" + satId + " (初始轨道信息) ====");
-            System.out.println(formatKeplerianElements(initialOrbit, simulationStartDate)); // 调用辅助方法格式化输出
+//            System.out.println("\n==== 卫星 #" + satId + " (初始轨道信息) ====");
+//            System.out.println(formatKeplerianElements(initialOrbit, simulationStartDate)); // 调用辅助方法格式化输出
 
             if (!hasVisibility) {
                 System.out.println("  该卫星在仿真期间内无可见性事件。");

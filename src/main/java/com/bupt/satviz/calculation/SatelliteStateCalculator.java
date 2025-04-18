@@ -32,7 +32,7 @@ public class SatelliteStateCalculator {
             KeplerianElements ke = satellites.get(i);
             // 传播至目标时间，得到 PropagationResult 对象
             PropagationResult result = propagator.propagate(ke, targetTime);
-            // 构造卫星状态对象（注意：经纬度单位在 GeodeticPoint 中为弧度，此处打印时可以转换为度）
+            // 构造卫星状态对象
             SatelliteState state = new SatelliteState(i, result.getPosition(),
                     result.getLatRateDegPerSec(),
                     result.getLonRateDegPerSec(),

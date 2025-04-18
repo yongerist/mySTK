@@ -11,11 +11,7 @@ import org.orekit.time.AbsoluteDate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class ParallelVisibilityExecutor {
 
@@ -36,13 +32,14 @@ public class ParallelVisibilityExecutor {
                                                          AbsoluteDate endDate) throws Exception {
         int numSatellites = allEphemerides.size();
         // 1. 创建固定大小的线程池（线程数可设为CPU核心数）
-        int numThreads = 8; // Runtime.getRuntime().availableProcessors();
+        int numThreads = 20; // Runtime.getRuntime().availableProcessors();
         // 2. 创建固定大小线程池
-        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-        System.out.println("  启动并行计算，使用 " + numThreads + " 个线程.");
+//        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(numThreads);
+        System.out.println("  启动并行计算，已请求最大线程数: " + numThreads + " ...");
         // 3. 为每颗卫星创建可见性计算任务并提交到线程池
         List<Future<SatResult>> futures = new ArrayList<>();
-        System.out.println("  为 " + numSatellites + " 颗卫星创建并提交可见性计算任务...");
+//        System.out.println("  为 " + numSatellites + " 颗卫星创建并提交可见性计算任务...");
         for (int satIndex = 0; satIndex < numSatellites; satIndex++) {
             // 创建任务，传递当前卫星的星历和其他所需数据
             Callable<SatResult> task = new SatelliteVisibilityTask(
@@ -55,7 +52,7 @@ public class ParallelVisibilityExecutor {
             );
             futures.add(executor.submit(task));
         }
-        System.out.println("  所有任务已提交.");
+//        System.out.println("  所有任务已提交.");
 
         // 4. 收集所有任务的执行结果
         System.out.println("  等待并收集计算结果...");
@@ -63,13 +60,14 @@ public class ParallelVisibilityExecutor {
         for (int i = 0; i < futures.size(); i++) {
             Future<SatResult> future = futures.get(i);
             try {
-                // future.get() 会阻塞直到任务完成或抛出异常
+                 // future.get(); // 会阻塞直到任务完成或抛出异常
                 SatResult result = future.get();
                 allResults.add(result);
                 // 可选：报告进度
-                if ((i + 1) % 10 == 0 || i == futures.size() - 1) {
-                    System.out.println("    已收集 " + (i + 1) + " / " + futures.size() + " 个任务的结果.");
-                }
+//                if ((i + 1) % 10 == 0 || i == futures.size() - 1) {
+//                    System.out.println("    已收集 " + (i + 1) + " / " + futures.size() + " 个任务的结果.");
+//                }
+//                System.out.println("当前正在执行的线程数（activeCount）: " + executor.getActiveCount());
             } catch (InterruptedException e) {
                 // 如果主线程在等待时被中断
                 Thread.currentThread().interrupt(); // 重新设置中断状态
@@ -81,7 +79,7 @@ public class ParallelVisibilityExecutor {
             }
         }
         System.out.println("  所有计算结果收集完毕.");
-
+//        System.out.println("线程池中已创建线程数（poolSize）: " + executor.getPoolSize());
         // 4. 关闭线程池
         System.out.println("  正在关闭线程池...");
         executor.shutdown(); // 不再接受新任务，等待现有任务完成

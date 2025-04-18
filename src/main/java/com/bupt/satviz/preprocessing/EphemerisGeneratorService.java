@@ -40,7 +40,7 @@ public class EphemerisGeneratorService {
                                                               AbsoluteDate endDate)
             throws OrekitException { // 明确抛出 OrekitException
 
-        System.out.println("  开始生成星历...");
+//        System.out.println("  开始生成星历...");
         List<BoundedPropagator> allEphemerides = new ArrayList<>();
         int totalSatellites = orbitsElements.size();
 
@@ -64,11 +64,11 @@ public class EphemerisGeneratorService {
             allEphemerides.add(generator.getGeneratedEphemeris());
 
             // 可选：打印生成进度
-            if ((i + 1) % 10 == 0 || i == totalSatellites - 1) {
-                System.out.println("    已生成 " + (i + 1) + " / " + totalSatellites + " 个卫星的星历.");
-            }
+//            if ((i + 1) % 10 == 0 || i == totalSatellites - 1) {
+//                System.out.println("    已生成 " + (i + 1) + " / " + totalSatellites + " 个卫星的星历.");
+//            }
         }
-        System.out.println("  所有卫星星历生成完毕.");
+//        System.out.println("  所有卫星星历生成完毕.");
         return allEphemerides;
     }
 }

@@ -16,7 +16,7 @@ public class DataPreparation {
     public static SimulationParameters prepareSimulationData() {
         // 1. 初始化仿真起止时间 (2小时)
         AbsoluteDate startDate = new AbsoluteDate(2025, 1, 1, 4, 0, 0.0, TimeScalesFactory.getUTC());
-        AbsoluteDate endDate   = startDate.shiftedBy(3600.0);  // 仿真持续2小时
+        AbsoluteDate endDate   = startDate.shiftedBy(3600.0);  // 仿真持续1小时
 
         // 2. 星座参数
         int numOrbits = 10;       // 10条轨道
@@ -52,9 +52,9 @@ public class DataPreparation {
             // 计算当前轨道的基础相位偏移
             double orbitPhaseOffset = basePhaseOffsetStep * orbitIndex;
 
-            String direction = isPrograde ? "顺行(Prograde)" : "逆行(Retrograde)";
-            System.out.println("  轨道 #" + orbitIndex + ": RAAN=" + String.format("%.1f", raan)
-                    + ", 方向=" + direction + ", 相位偏移=" + String.format("%.1f", orbitPhaseOffset));
+//            String direction = isPrograde ? "顺行(Prograde)" : "逆行(Retrograde)";
+//            System.out.println("  轨道 #" + orbitIndex + ": RAAN=" + String.format("%.1f", raan)
+//                    + ", 方向=" + direction + ", 相位偏移=" + String.format("%.1f", orbitPhaseOffset));
 
             for (int satIndex = 0; satIndex < satsPerOrbit; satIndex++) {
 
@@ -92,7 +92,7 @@ public class DataPreparation {
 
         // 3. 生成地面站列表
         List<GroundStation> groundStations = new ArrayList<>();
-        int numGroundStations = 10;
+        int numGroundStations = 100;
         System.out.println("生成地面站：");
         for (int i = 0; i < numGroundStations; i++) {
             double lat = 0;
@@ -100,7 +100,7 @@ public class DataPreparation {
             double alt = 0;
             GroundStation gs = new GroundStation(lat, lon, alt);
             groundStations.add(gs);
-            System.out.println("  地面站 #" + i + ": " + gs.toString());
+//            System.out.println("  地面站 #" + i + ": " + gs.toString());
         }
 
         // 封装并返回所有参数
