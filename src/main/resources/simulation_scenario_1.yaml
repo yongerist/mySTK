@@ -13,32 +13,28 @@ simulation:
       argPerigee: 0.0
       trueAnomaly: 0.0
       epoch: "2025-01-01T04:00:00Z"
-
     - semiMajorAxis: 6878140.0
       eccentricity: 0.0
-      inclination: 45.0
-      raan: 36.0
-      argPerigee: 0.0
-      trueAnomaly: 0.0
-      epoch: "2025-01-01T04:00:00Z"
-
-
-    - semiMajorAxis: 6878140.0
-      eccentricity: 0.0
-      inclination: 45.0
+      inclination: 90.0
       raan: 0.0
       argPerigee: 0.0
       trueAnomaly: 30.0
       epoch: "2025-01-01T04:00:00Z"
 
 
-
     - semiMajorAxis: 6878140.0
       eccentricity: 0.0
       inclination: 90.0
-      raan: 70.0
+      raan: 36.0
       argPerigee: 0.0
-      trueAnomaly: 0.0
+      trueAnomaly: 15.0
+      epoch: "2025-01-01T04:00:00Z"
+    - semiMajorAxis: 6878140.0
+      eccentricity: 0.0
+      inclination: 90.0
+      raan: 36.0
+      argPerigee: 0.0
+      trueAnomaly: 45.0
       epoch: "2025-01-01T04:00:00Z"
 
 
