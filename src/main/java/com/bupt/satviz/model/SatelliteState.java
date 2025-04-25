@@ -5,11 +5,11 @@ import org.orekit.bodies.GeodeticPoint;
 
 @Getter
 public class SatelliteState {
-    private int satelliteId;  // 卫星编号
-    private GeodeticPoint position;  // 地理位置（纬度/经度/高度），纬度和经度以弧度表示
-    private double latRateDegPerSec;
-    private double lonRateDegPerSec;
-    private double altRateMetersPerSec;
+    private final int satelliteId;  // 卫星编号
+    private final GeodeticPoint position;  // 地理位置（纬度/经度/高度），纬度和经度以弧度表示
+    private final double latRateDegPerSec;
+    private final double lonRateDegPerSec;
+    private final double altRateMetersPerSec;
 
     public SatelliteState(int satelliteId, GeodeticPoint position,
                           double latRate, double lonRate, double altRate) {

@@ -58,8 +58,11 @@ public class ConsoleResultPrinter {
 
             // 1. 打印与地面站的可见性
             boolean gsHeaderPrinted = false;
-            for (Map.Entry<String, List<VisibilityWindow>> entry : res.getGroundStationResults().entrySet()) {
-                String stationId = entry.getKey(); // 地面站标识符
+            // 按 地面站 ID 排序后再打印，使输出更规整
+            List<Map.Entry<Integer, List<VisibilityWindow>>> sortedGsEntries = new ArrayList<>(res.getGroundStationResults().entrySet());
+            sortedGsEntries.sort(Map.Entry.comparingByKey());
+            for (Map.Entry<Integer, List<VisibilityWindow>> entry : sortedGsEntries) {
+                int stationId = entry.getKey(); // 地面站标识符
                 List<VisibilityWindow> windows = entry.getValue();
                 if (windows == null || windows.isEmpty()) continue; // 跳过无窗口的
 
@@ -67,7 +70,7 @@ public class ConsoleResultPrinter {
                     System.out.println("  --- 与地面站可见性 ---");
                     gsHeaderPrinted = true;
                 }
-                System.out.println("    地面站 [" + stationId + "] 窗口数: " + windows.size());
+                System.out.println("    地面站 #" + stationId + " 窗口数: " + windows.size());
                 printVisibilityWindows(windows); // 调用辅助方法打印窗口
             }
 

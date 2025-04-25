@@ -82,11 +82,12 @@ public class SimulationConfig {
             }
             List<Map<String, Object>> gsList = (List<Map<String, Object>>) groundStationsObj;
             this.groundStations = new ArrayList<>();
-            for (Map<String, Object> gsMap : gsList) {
+            for (int i = 0; i < gsList.size(); i++) { // 使用索引 i 作为 ID
+                Map<String, Object> gsMap = gsList.get(i);
                 double lat = getDouble(gsMap, "lat");
                 double lon = getDouble(gsMap, "lon");
                 double alt = getDouble(gsMap, "alt");
-                groundStations.add(new GroundStation(lat, lon, alt));
+                groundStations.add(new GroundStation(i, lat, lon, alt));
             }
 
             // --- 可选：解析其他可见性参数 ---

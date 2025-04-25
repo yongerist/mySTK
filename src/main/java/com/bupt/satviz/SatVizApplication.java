@@ -35,24 +35,24 @@ public class SatVizApplication {
             OrekitConfig.initialize();
             System.out.println("Orekit 初始化完成.");
 //            2. 调用数据准备模块，获取模拟参数(硬编码)
-//            DataPreparation.SimulationParameters simParams = DataPreparation.prepareSimulationData();
-//            orbitsElements = simParams.satelliteOrbits;
-//            List<GroundStation> groundStations = simParams.groundStations;
-//            startDate = simParams.startDate;
-//            AbsoluteDate endDate = simParams.endDate;
+            DataPreparation.SimulationParameters simParams = DataPreparation.prepareSimulationData();
+            orbitsElements = simParams.satelliteOrbits;
+            List<GroundStation> groundStations = simParams.groundStations;
+            startDate = simParams.startDate;
+            AbsoluteDate endDate = simParams.endDate;
 
             // 2. 通过 SimulationConfig 加载仿真参数（YAML 文件在 src/main/resources 下）
-            System.out.println("步骤 2: 加载仿真配置 ...");
-            SimulationConfig config = new SimulationConfig("simulation_scenario_1.yaml");
-            orbitsElements = config.getSatelliteOrbits();
-            List<GroundStation> groundStations = config.getGroundStations();
-            startDate = config.getStartDate();
-            AbsoluteDate endDate = config.getEndDate();
-            if (orbitsElements == null || groundStations == null || startDate == null || endDate == null) {
-                throw new RuntimeException("仿真参数加载失败！");
-            }
-            System.out.println("仿真配置加载完成. 开始时间: " + startDate + ", 结束时间: " + endDate);
-            System.out.println("卫星数量: " + orbitsElements.size() + ", 地面站数量: " + groundStations.size());
+//            System.out.println("步骤 2: 加载仿真配置 ...");
+//            SimulationConfig config = new SimulationConfig("simulation_scenario_1.yaml");
+//            orbitsElements = config.getSatelliteOrbits();
+//            List<GroundStation> groundStations = config.getGroundStations();
+//            startDate = config.getStartDate();
+//            AbsoluteDate endDate = config.getEndDate();
+//            if (orbitsElements == null || groundStations == null || startDate == null || endDate == null) {
+//                throw new RuntimeException("仿真参数加载失败！");
+//            }
+//            System.out.println("仿真配置加载完成. 开始时间: " + startDate + ", 结束时间: " + endDate);
+//            System.out.println("卫星数量: " + orbitsElements.size() + ", 地面站数量: " + groundStations.size());
 
 
             // --- 步骤 2.5: 调用新模块生成星历 ---

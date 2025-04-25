@@ -98,9 +98,8 @@ public class DataPreparation {
             double lat = 0;
             double lon = (360.0 / numGroundStations) * i; // 均匀分布经度
             double alt = 0;
-            GroundStation gs = new GroundStation(lat, lon, alt);
+            GroundStation gs = new GroundStation(i,lat, lon, alt);
             groundStations.add(gs);
-//            System.out.println("  地面站 #" + i + ": " + gs.toString());
         }
 
         // 封装并返回所有参数

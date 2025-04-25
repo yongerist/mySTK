@@ -49,15 +49,13 @@ public class SatelliteVisibilityTask implements Callable<SatResult> {
                         primarySatEphemeris, startDate, endDate,
                         gs.lat, gs.lon, gs.alt);
                 // 只添加包含窗口的结果，避免空的列表项
-                // TODO：确保 gs.toString() 提供唯一且合适的标识符。地面站需要序号
                 if (windows != null && !windows.isEmpty()) {
-                    result.addGroundStationResult(gs.toString(), windows);
+                    result.addGroundStationResult(gs.getId(), windows);
                 }
             } catch (OrekitException e) {
                 // 捕获并记录 Orekit 相关的错误
-                System.err.println("任务 #" + satId + ": 计算与地面站 " + gs.toString() +
+                System.err.println("任务 #" + satId + ": 计算与地面站 ID " + gs.getId() +
                         " 可见性时发生 Orekit 错误: " + e.getLocalizedMessage());
-                e.printStackTrace(); // 调试时使用
             }
         }
         //System.out.println("  任务 #" + satId + ": 星地计算完成.");
