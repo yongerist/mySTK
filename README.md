@@ -23,7 +23,8 @@ satviz/
 │   ├── SatVizApplication.java        // 应用主入口，驱动整个仿真流程
 │   ├── config/
 │   │   ├── SimulationConfig.java     // 从 YAML 文件加载仿真参数
-│   │   └── OrekitConfig.java         // 集中初始化 Orekit（加载 orekit-data 数据）
+│   │   ├── OrekitConfig.java         // 集中初始化 Orekit（加载 orekit-data 数据）
+│   │   └── DataPreparation.java      //  处理仿真数据准备（卫星、地面站、时间等）
 │   ├── calculation/
 │   │   ├── OrbitPropagator.java      // 使用 Orekit 进行轨道传播计算
 │   │   └── SatelliteStateCalculator.java // 计算卫星状态（位置、变化率）
@@ -37,16 +38,16 @@ satviz/
 │   │   ├── VisibilityWindow.java     // 可见性窗口的数据结构
 │   │   ├── SatResult.java            // 卫星可见性结果（包含地面站/卫星间窗口）
 │   │   └── SatelliteState.java       // 卫星状态（位置与运动变化率）
+│   ├── preprocessing/ 
+│   │   └── EphemerisGeneratorService.java  // 生成卫星星历
 │   ├── output/
 │   │   └── ConsoleResultPrinter.java // 格式化输出仿真结果到控制台
 │   └── visibility/
 │       ├── GroundStationVisibilityAnalyzer.java // 地面站可见性计算模块
 │       └── InterSatelliteVisibilityAnalyzer.java  // 卫星间可见性计算模块
-├── src/main/resources/
-│   ├── simulation_scenario_?.yaml    // YAML 配置文件，定义仿真参数（卫星、地面站、仿真时间）
-│   └── logback.xml                   // Logback 日志配置文件
-└── src/test/java/                    // 测试代码目录
-    └── ...                           // 各模块单元测试及集成测试（与 src/main/java 镜像结构）
+└── src/main/resources/
+    └── simulation_scenario_?.yaml    // YAML 配置文件，定义仿真参数（卫星、地面站、仿真时间）
+
 ```
 
 ## 使用说明

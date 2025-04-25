@@ -25,7 +25,8 @@ public class DataPreparation {
         double eccentricity  = 0.0;       // 圆轨道
         double inclination   = 90.0;      // 极轨道
         double argPerigee    = 0.0;       // 对圆轨道无具体意义，设为0
-
+        // 3. 地面站参数
+        int numGroundStations = 50;
         // 轨道参数列表
         List<KeplerianElements> allSatOrbits = new ArrayList<>();
 
@@ -92,7 +93,6 @@ public class DataPreparation {
 
         // 3. 生成地面站列表
         List<GroundStation> groundStations = new ArrayList<>();
-        int numGroundStations = 100;
         System.out.println("生成地面站：");
         for (int i = 0; i < numGroundStations; i++) {
             double lat = 0;
