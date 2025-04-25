@@ -61,50 +61,40 @@ satviz/
 
 确保在 `pom.xml`  中已经正确添加相关依赖。
 
-### 2. 配置仿真场景
 
-- 修改 `src/main/resources/simulation_scenario_?.yaml` 文件：
-    - 可设置仿真起始时间与持续时长。
-    - 定义卫星星座参数（本示例支持 12 个轨道平面，每个轨道平面内包含3颗卫星）。
-    - 定义地面站的坐标（如 10 个地面站）。
+### 2. 配置
+目前，仿真参数主要在 `src/main/java/com/bupt/satviz/config/DataPreparation.java` 文件中 **硬编码** 定义。您可以修改此文件来更改星座、地面站和仿真时间。
 
-如需要切换场景，可创建多个配置文件或在单个文件中增加场景识别标识，在 `SatVizApplication` 中选择加载不同场景。
+项目也通过 `src/main/java/com/bupt/satviz/config/SimulationConfig.java` 支持 **YAML 配置**，使用类似 `src/main/resources/simulation_scenario_1.yaml` 的文件。但是，这部分代码目前在 `SatVizApplication.java` 中被 **注释掉了**。要启用它，您需要：
 
-### 3. 初始化 Orekit
+1.  在 `SatVizApplication.java` 中取消注释 `SimulationConfig` 加载代码。
+2.  在 `SatVizApplication.java` 中注释掉 `DataPreparation` 代码。
+3.  确保在 `src/main/resources/` 中存在一个有效的 YAML 文件（例如 `simulation_scenario_1.yaml`）。
 
-- 项目启动时，在主程序入口中调用 `OrekitConfig.initialize()`，该方法加载 `orekit-data` 数据目录中的文件，并完成必要的 Orekit 初始化。
 
-### 4. 构建与运行
+### 3. 运行
 
-#### 使用 Maven
+直接从您的 IDE 运行`SatVizApplication`类。
+该类会自动加载配置文件，初始化 Orekit，并开始仿真计算。
+仿真结果将输出到控制台。包括：
+- 初始化消息。
+- 星历生成和可见性计算期间的进度指示。
+- 仿真结束时计算出的卫星状态。
+- 每个卫星的详细可见性窗口（对地面站和其他卫星）。
+- 总仿真运行时间。
 
-构建项目：
+## 代码概览
 
-```bash
-mvn clean install
-```
+- **SatVizApplication:** 主驱动类。
+- **config:** 处理参数加载（YAML 或硬编码）和 Orekit 设置。
+- **preprocessing:** 生成星历（预计算的轨迹）。
+- **calculation:** 计算特定时间的卫星状态。
+- **concurrent:** 管理可见性任务的并行执行。
+- **visibility:** 包含使用 Orekit 事件进行星地和星间可见性检测的算法。
+- **model:** 数据类（轨道、站点、结果等）。
+- **output:** 格式化结果以供控制台打印。
 
-运行项目：
 
-```bash
-mvn exec:java -Dexec.mainClass="com.bupt.satviz.SatVizApplication"
-```
-
-### 5. 测试
-
-测试代码位于 `src/test/java`。可通过命令行运行所有测试：
-
-```bash
-mvn test
-```
-
-确保所有测试用例顺利通过，以验证各模块功能的正确性。
-
-### 6. 日志配置
-
-- 日志配置文件 `logback.xml` 放置在 `src/main/resources` 中。
-- 修改该文件可调整日志级别、格式以及输出方式（例如控制台或文件）。
-- 运行程序时，日志输出会根据该配置显示相关信息，便于调试和问题排查。
 
 ## 贡献指南
 
@@ -116,6 +106,3 @@ mvn test
 
 如果对本项目有任何疑问或建议，欢迎在项目仓库中提交 Issue 或直接联系维护者。
 
----
-
-以上即为本项目的基本介绍及使用说明，欢迎大家一起参与，共同完善这个卫星可见性模拟器项目。
